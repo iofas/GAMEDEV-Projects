@@ -30,9 +30,14 @@ public class PlatformerController : MonoBehaviour
     Transform platform;
     Vector3 platformLastPos;
 
+    // Speed boost bonus
+    float speedMultiplier = 1f;
+    float speedBoostTimer;
+
     void Start()
     {
         cc = GetComponent<CharacterController>();
+        startPos = transform.position;
     }
 
     void Update()
@@ -41,6 +46,17 @@ public class PlatformerController : MonoBehaviour
         {
             Respawn();
             return;
+        }
+
+        // Count down the speed boost, then go back to normal speed
+        if (speedBoostTimer > 0)
+        {
+            speedBoostTimer -= Time.deltaTime;
+            if (speedBoostTimer <= 0)
+            {
+                speedMultiplier = 1f;
+                Debug.Log("Speed boost ended");
+            }
         }
 
         velocity += gravity * gravityScale * Time.deltaTime;
@@ -64,7 +80,7 @@ public class PlatformerController : MonoBehaviour
         // Horizontal movement along the world X/Z axes
         Vector3 movement = Vector3.zero;
         if (canMove)
-            movement = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed;
+            movement = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * speedMultiplier;
 
         movement.y = velocity;
 
@@ -101,6 +117,15 @@ public class PlatformerController : MonoBehaviour
         cc.enabled = true;
         velocity = 0;
         platform = null;
+        speedMultiplier = 1f;
+        speedBoostTimer = 0;
+    }
+
+    public void SpeedBoost(float multiplier, float duration)
+    {
+        speedMultiplier = multiplier;
+        speedBoostTimer = duration;
+        Debug.Log("Speed boost for " + duration + " seconds!");
     }
 
     public void OnMove(InputValue value)
