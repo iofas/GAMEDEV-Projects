@@ -18,7 +18,7 @@ public class LevelGoal : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlatformerController>() != null)
+        if (other.GetComponent<PlatformerController>() != null || other.GetComponent<FirstPersonController>() != null)
         {
             Debug.Log("Level Clear!");
 
@@ -28,6 +28,10 @@ public class LevelGoal : MonoBehaviour
 
                 // Freeze the game
                 Time.timeScale = 0f;
+
+                // Show the mouse again so the Retry button can be clicked
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
         }
     }
